@@ -1,0 +1,6 @@
+Endpoint (Hostname): database-1.ckyemwz0gdo2.us-west-2.rds.amazonaws.com
+Instance identifier: database-1
+Database name: cicd
+Username: postgres
+Password: Taher_1234
+Port: 5432
