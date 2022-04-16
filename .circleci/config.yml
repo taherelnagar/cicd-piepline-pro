@@ -4,7 +4,7 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      workflowID:
+      workflow_ID:
         type: string 
     steps:
       - run:
@@ -17,7 +17,7 @@ commands:
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      workflowID:
+      workflow_ID:
         type: string      
     steps:
       - run:
