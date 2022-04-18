@@ -173,36 +173,39 @@ jobs:
             - project/.circleci/ansible/inventory.txt
 
       # Here's where you will add some code to rollback on failure
-         
+
       - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail
 
-  # configure-infrastructure:
-  #   docker:
-  #     - image: python:3.7-alpine3.11
-  #   steps:
-  #     - checkout
-  #     - add_ssh_keys:
-  #           fingerprints: ["6f:a6:4f:9d:df:b9:24:62:d3:b5:a5:32:2c:4e:bd:60"]
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           apk add curl
-  #           apk add --upgrade bash
-  #           apk add --update ansible
-  #           apk add openssh-client
-  #           pip3 install awscli
-  #     - run:
-  #         name: Configure server
-  #         command: |
-  #           ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+            fingerprints: ["6f:a6:4f:9d:df:b9:24:62:d3:b5:a5:32:2c:4e:bd:60"]
+      - attach_workspace:
+          at: ~/
+
+      - run:
+          name: Install dependencies
+          command: |
+            apk add curl
+            apk add --upgrade bash
+            apk add --update ansible
+            apk add openssh-client
+            pip3 install awscli
+            
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
      
-  #     - destroy-environment:
-  #         workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-  #         event: on_fail
+      - destroy-environment:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail
 
   # run-migrations:
   #   docker:
