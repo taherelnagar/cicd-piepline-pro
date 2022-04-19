@@ -180,6 +180,8 @@ jobs:
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
+        environment:
+            ANSIBLE_HOST_KEY_CHECKING: "no"
     steps:
       - checkout
       - add_ssh_keys:
