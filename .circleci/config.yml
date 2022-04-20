@@ -221,7 +221,9 @@ jobs:
           name: Run migrations
           working_directory: ./backend
           command: |
-            sudo npm instal
+            npm instal
+            npm audit fix --audit-level=critical --force
+            npm audit fix --audit-level=critical --force
             npm run migrations > migrations_dump
 
       - run:
