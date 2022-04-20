@@ -234,7 +234,7 @@ jobs:
               echo "has failed"
               curl https://kvdb.io/88roAyCyec75vwGVA5LVKG/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '0'
             fi
-     - destroy-environment:
+      - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail      
 
