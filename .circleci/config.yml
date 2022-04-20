@@ -221,7 +221,7 @@ jobs:
           name: Run migrations
           working_directory: ./backend
           command: |
-          
+            sudo npm instal
             npm run migrations > migrations_dump
 
       - run:
