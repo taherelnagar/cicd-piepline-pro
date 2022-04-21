@@ -257,8 +257,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/
-          
-    - run:
+
+      - run:
           name: Install aws dependencies
           command: |
             sudo apt update && sudo apt install -yy less
