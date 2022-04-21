@@ -240,10 +240,10 @@ jobs:
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then 
               echo "has been done successfully"
-              curl https://kvdb.io/CqU5Sjda4N7pmGX6P4d94R/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+              curl -k https://kvdb.io/CqU5Sjda4N7pmGX6P4d94R/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             else
               echo "has failed"
-              curl https://kvdb.io/CqU5Sjda4N7pmGX6P4d94R/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '0'
+              curl -k https://kvdb.io/CqU5Sjda4N7pmGX6P4d94R/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '0'
             fi
 
       - destroy-environment:
