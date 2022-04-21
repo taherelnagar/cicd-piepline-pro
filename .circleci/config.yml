@@ -257,16 +257,14 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/
-      - run:
-          name: Install dependencies
+          
+    - run:
+          name: Install aws dependencies
           command: |
-
-            name: "install dependencies."
-              become: true
-              apt:
-                name: ["nodejs", "npm", "ansible", "python","awscli"]
-                state: latest
-                update_cache: yes
+            sudo apt update && sudo apt install -yy less
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
 
       - run:
           name: Get backend url
