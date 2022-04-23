@@ -292,6 +292,7 @@ jobs:
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
+
     steps:
       - checkout
       - add_ssh_keys:
@@ -299,35 +300,19 @@ jobs:
           
       - attach_workspace:
           at: ~/
+          
+      - run:
+          name: Install aws dependencies
+          command: |
+            sudo apt update && sudo apt install -yy less
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible nodejs npm tar gzip
 
-      - run:
-          name: Install ansible
-          command: |
-            apk add --update ansible
-            ansible --version
-      - run:
-          name: Install curl
-          command: |
-            apk add --update curl
-      - run:
-          name: Install nodejs, npm, rsync, openssh
-          command: |
-            apk add --update nodejs npm rsync openssh
-      - run:
-          name: Dump variables to file
-          working_directory: ./backend
-          command: |
-            echo ENVIROMENT=production >> ".env"
-            echo TYPEORM_CONNECTION=postgres >> ".env"
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> ".env"
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> ".env"
-            echo TYPEORM_HOST=${TYPEORM_HOST} >> ".env"
-            echo TYPEORM_PORT=${TYPEORM_PORT} >> ".env"
-            echo TYPEORM_USERNAME=${TYPEORM_USERNAME} >> ".env"
-            echo TYPEORM_PASSWORD=${TYPEORM_PASSWORD} >> ".env"
-            echo TYPEORM_DATABASE=${TYPEORM_DATABASE} >> ".env"
-            
       - run:
           name: Build backend
           working_directory: ./backend
@@ -340,6 +325,7 @@ jobs:
           command: |
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
+
       - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail
