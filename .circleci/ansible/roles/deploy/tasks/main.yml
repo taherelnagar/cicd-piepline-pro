@@ -1,28 +1,30 @@
 ---
-  - name: Copy files
-    become: true
-    copy:
-      src: /root/project/artifact.tar.gz
-      dest: /home/ubuntu/artifact.tar.gz
-  - name: Unarchive
-    become: true
-    shell : |
-        cd /home/ubuntu/
-        tar xvzf artifact.tar.gz -C .
-  - name: "run server"
-    become: true
-    shell : |
-        cd /home/ubuntu/
-        npm install
-        pm2 stop default
-        pm2 start npm -- start
-    environment:
-  - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"
-  - TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES')}}"
-  - TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST')}}"
-  - TYPEORM_PORT: 5432
-  - TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME')}}"
-  - TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD')}}"
-  - TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE')}}"
-  - TYPEORM_MIGRATIONS: "{{ lookup('env', 'TYPEORM_MIGRATIONS')}}"
-  - TYPEORM_MIGRATIONS_DIR: "{{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}"
+- name: "Creates backend app directory"
+  file:
+    path: ~/backend-app
+    state: directory
+
+
+- name: "Copy complied backend app"
+  become: true
+  copy:
+    src: artifact.tar.gz
+    dest: "~/backend-app/artifact.tar.gz"
+
+
+- name: "Unzip backend files"
+  shell: |
+    cd ~/backend-app
+    tar -xf artifact.tar.gz
+    rm -rf artifact.tar.gz
+
+- name: "install dependecies for project"
+  shell: |
+    cd ~/backend-app
+    npm install --force
+
+- name: "Executing node"
+  shell : |
+    cd ~/backend-app
+    pm2 stop default
+    pm2 start npm -- start
