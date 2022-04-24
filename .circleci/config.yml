@@ -301,17 +301,7 @@ jobs:
   #     - attach_workspace:
   #         at: ~/
       
-<<<<<<< HEAD
-  #     - run:
-  #         name: Install aws dependencies
-  #         command: |
-  #           sudo apt update && sudo apt install -yy less
-  #           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-  #           unzip awscliv2.zip
-  #           sudo ./aws/install
-=======
       
->>>>>>> e906f23b3ad84a4d7c0b1c9d839c4572671a3078
 
   #     - run:
   #         name: Install dependencies
