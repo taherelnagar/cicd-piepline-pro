@@ -289,48 +289,48 @@ jobs:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail          
                     
-  deploy-backend:
-    docker:
-      - image: python:3.7-alpine3.11
+  # deploy-backend:
+  #   docker:
+  #     - image: python:3.7-alpine3.11
 
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["6f:a6:4f:9d:df:b9:24:62:d3:b5:a5:32:2c:4e:bd:60"]
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints: ["6f:a6:4f:9d:df:b9:24:62:d3:b5:a5:32:2c:4e:bd:60"]
           
-      - attach_workspace:
-          at: ~/
+  #     - attach_workspace:
+  #         at: ~/
       
-      - run:
-          name: Install aws dependencies
-          command: |
-            sudo apt update && sudo apt install -yy less
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
+  #     - run:
+  #         name: Install aws dependencies
+  #         command: |
+  #           sudo apt update && sudo apt install -yy less
+  #           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  #           unzip awscliv2.zip
+  #           sudo ./aws/install
 
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible nodejs npm tar gzip
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           apk add --update ansible nodejs npm tar gzip
 
-      - run:
-          name: Build backend
-          working_directory: ./backend
-          command: |
-            npm install
-            npm run build
+  #     - run:
+  #         name: Build backend
+  #         working_directory: ./backend
+  #         command: |
+  #           npm install
+  #           npm run build
             
-      - run:
-          name: Deploy backend
-          working_directory: ./.circleci/ansible
-          command: |
-            cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml
+  #     - run:
+  #         name: Deploy backend
+  #         working_directory: ./.circleci/ansible
+  #         command: |
+  #           cat inventory.txt
+  #           ansible-playbook -i inventory.txt deploy-backend.yml
 
-      - destroy-environment:
-          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          event: on_fail
+  #     - destroy-environment:
+  #         workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
+  #         event: on_fail
 
   # smoke-test:
   #   docker:
@@ -414,8 +414,8 @@ workflows:
           requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
