@@ -71,6 +71,9 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - save_cache:
+          paths: [backend/dist]
+          key: backend-dist
 
   test-frontend:
     docker:
@@ -289,17 +292,16 @@ jobs:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail          
                     
-  # deploy-backend:
-  #   docker:
-  #     - image: python:3.7-alpine3.11
-
-  #   steps:
-  #     - checkout
-  #     - add_ssh_keys:
-  #         fingerprints: ["6f:a6:4f:9d:df:b9:24:62:d3:b5:a5:32:2c:4e:bd:60"]
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["6f:a6:4f:9d:df:b9:24:62:d3:b5:a5:32:2c:4e:bd:60"]
           
-  #     - attach_workspace:
-  #         at: ~/
+      - attach_workspace:
+          at: ~/
       
       
 
@@ -308,19 +310,20 @@ jobs:
   #         command: |
   #           apk add --update ansible nodejs npm tar gzip
 
-  #     - run:
-  #         name: Build backend
-  #         working_directory: ./backend
-  #         command: |
-  #           npm install
-  #           npm run build
+      - restore_cache:
+          keys: ["backend-dist"]  # -<< pipeline.id >>
+      - run:
+          name: Deploy backend
+          command: |
+            cd /home
+            tar czf backend.tar.gz -P /home/circleci/project/backend/dist
             
-  #     - run:
-  #         name: Deploy backend
-  #         working_directory: ./.circleci/ansible
-  #         command: |
-  #           cat inventory.txt
-  #           ansible-playbook -i inventory.txt deploy-backend.yml
+      - run:
+          name: Deploy backend
+          command: |
+            export ANSIBLE_HOST_KEY_CHECKING=False
+            cat inventory.txt
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
 
   #     - destroy-environment:
   #         workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
