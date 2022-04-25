@@ -341,6 +341,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update curl
+            pip install awscli
 
       - attach_workspace:
           at: ~/
