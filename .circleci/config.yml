@@ -396,7 +396,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
+             # no need 
       - run:
           name: Update cloudfront distribution
           command: |
