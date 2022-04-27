@@ -396,11 +396,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-             # no need 
+             yum install -y tar gzip
+
       - run:
           name: Update cloudfront distribution
           command: |
-            export OldWorkflowID=$(aws cloudformation list-exports \
+            OldWorkflowID=$(aws cloudformation list-exports \
               --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate --output text)
 
@@ -409,18 +410,20 @@ jobs:
 
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
-              --stack-name "IntialStack-${OldWorkflowID}" \
+              --stack-name "udapeople-cloudfront" \
               --parameter-overrides WorkflowID="udapeaple-${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
 
             echo OldWorkflowID: "${OldWorkflowID}"
             echo Current Workflow ID: "${CIRCLE_WORKFLOW_ID:0:7}"
-      - destroy-environment:
-          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          event: on_fail 
 
-      - revert-migrations:
-          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}   
+
+      # - destroy-environment:
+      #     workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
+      #     event: on_fail 
+
+      # - revert-migrations:
+      #     workflowID: ${CIRCLE_WORKFLOW_ID:0:7}   
 
   # cleanup:
   #   docker:
