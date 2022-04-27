@@ -293,7 +293,7 @@ jobs:
 
       - revert-migrations:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}      
-          event: on_fail
+          
 
   deploy-backend:
     docker:
@@ -338,7 +338,7 @@ jobs:
 
       - revert-migrations:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}      
-          event: on_fail
+          
 
   smoke-test:
     docker:
@@ -386,7 +386,7 @@ jobs:
 
       - revert-migrations:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}      
-          event: on_fail    
+          
 
   # cloudfront-update:
   #   docker:
