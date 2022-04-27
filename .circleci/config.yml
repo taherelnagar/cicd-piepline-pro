@@ -409,12 +409,12 @@ jobs:
 
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
-              --stack-name "udapeople-cloudfront" \
-              --parameter-overrides WorkflowID="<< pipeline.parameters.workflow-id >>" \
+              --stack-name "IntialStack-{OldWorkflowID}" \
+              --parameter-overrides WorkflowID="udapeaple-${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
 
             echo Old Workflow ID: "${OldWorkflowID}"
-            echo Current Workflow ID: "${CIRCLE_WORKFLOW_ID:0:7}"" 
+            echo Current Workflow ID: "${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail 
