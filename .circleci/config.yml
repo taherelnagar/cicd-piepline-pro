@@ -25,16 +25,15 @@ commands:
     steps:
       - run:
           name: Revert migrations
-          # Add when this will run
+          when: on_fail
           command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+      
+            SUCCESS=$(curl --insecure  https://kvdb.io/CqU5Sjda4N7pmGX6P4d94R/migration_<< parameters.workflowID >>)
             if(( $SUCCESS==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+              cd ~/project/backend
+              npm install
+              npm run migration:revert
             fi
             
 jobs:
@@ -291,7 +290,11 @@ jobs:
       - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail          
-                    
+
+      - revert-migrations:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}      
+          event: on_fail
+
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
@@ -333,6 +336,10 @@ jobs:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail
 
+      - revert-migrations:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}      
+          event: on_fail
+
   smoke-test:
     docker:
       - image: python:3.7-alpine3.11
@@ -367,15 +374,19 @@ jobs:
             echo $URL
             if curl -s ${URL} | grep "Welcome"
             then
-              return 0
+              return 1
             else
               return 1
             fi 
 
             
-      # - destroy-environment:
-      #     workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-      #     event: on_fail 
+      - destroy-environment:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail 
+
+      - revert-migrations:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}      
+          event: on_fail    
 
   # cloudfront-update:
   #   docker:
