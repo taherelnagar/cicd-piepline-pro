@@ -388,7 +388,7 @@ jobs:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}      
           
 
-  cloudfront-update-and-cleanup:
+  cloudfront-updateu:
     docker:
       - image: amazon/aws-cli
     steps:
