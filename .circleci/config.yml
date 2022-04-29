@@ -408,18 +408,18 @@ jobs:
             echo $OldWorkflowID >> ~/OldWorkflowID.txt
             cat ~/OldWorkflowID.txt
 
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths: 
-            - ~/OldWorkflowID.txt
-             
             # curl -k https://kvdb.io/AjcQF86cwGoJqqvEYsgxFD/old_workflow_id  -d $OldWorkfolwID
-
+            
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name InitialStack \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" 
-            
+
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths: 
+            - ~/OldWorkflowID.txt
+
             echo OldWorkflowID: "${OldWorkflowID}"
             echo Current Workfolw Id:"${CIRCLE_WORKFLOW_ID:0:7}" 
 
