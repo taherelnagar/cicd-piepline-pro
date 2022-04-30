@@ -408,7 +408,7 @@ jobs:
             echo $OldWorkflowID >> ~/OldWorkflowID.txt
             cat ~/OldWorkflowID.txt
 
-            # curl -k https://kvdb.io/AjcQF86cwGoJqqvEYsgxFD/old_workflow_id  -d $OldWorkfolwID
+            # curl -k https://kvdb.io/AjcQF86cwGoJqqvEYsgxFD/old_workflow_id  -d '$OldWorkfolwID'
 
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
@@ -423,9 +423,9 @@ jobs:
                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
             echo Stack names: "${STACKS[@]}"
 
-      - run:
-          name: Remove old stacks and files
-          command: |
+      # - run:
+      #     name: Remove old stacks and files
+      #     command: |
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
               echo "------------Delete Confirmed-----------------"
@@ -436,12 +436,12 @@ jobs:
               echo '------------Can not Cleanup------------------'
             fi
 
-      - destroy-environment:
-          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          event: on_fail 
+      # - destroy-environment:
+      #     workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
+      #     event: on_fail 
 
-      - revert-migrations:
-          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}   
+      # - revert-migrations:
+      #     workflowID: ${CIRCLE_WORKFLOW_ID:0:7}   
 
   # cleanup:
   #   docker:
