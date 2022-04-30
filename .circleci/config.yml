@@ -408,7 +408,7 @@ jobs:
             echo $OldWorkflowID >> ~/OldWorkflowID.txt
             cat ~/OldWorkflowID.txt
 
-            curl -k https://kvdb.io/AjcQF86cwGoJqqvEYsgxFD/old_workflow_id  -d $OldWorkfolwID
+            # curl -k https://kvdb.io/AjcQF86cwGoJqqvEYsgxFD/old_workflow_id  -d $OldWorkfolwID
 
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
@@ -435,7 +435,7 @@ jobs:
             else
               echo '------------Can not Cleanup------------------'
             fi
-            
+
       - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail 
