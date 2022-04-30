@@ -408,7 +408,7 @@ jobs:
             echo $OldWorkflowID >> ~/OldWorkflowID.txt
             cat ~/OldWorkflowID.txt
 
-            curl -k https://kvdb.io/AjcQF86cwGoJqqvEYsgxFD/old_workflow_id  -d '$OldWorkfolwID'
+            curl -k https://kvdb.io/AjcQF86cwGoJqqvEYsgxFD/old_workflow_id  -d $OldWorkflowID
 
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
