@@ -257,37 +257,38 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: cimg/node:13.14.0
-    steps:
+      - image: python:3.7-alpine3.11
+    steps: 
       - checkout
-      - attach_workspace:
-          at: ~/
-
-      - run:
-          name: Install aws dependencies
+      - run: 
+          name: install dependencies 
           command: |
-            sudo apt update && sudo apt install -yy less
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-
+            
+            apk add --no-cache curl
+            apk add --no-cache --upgrade bash
+            apk add --no-cache --update npm
+            pip3 install awscli
+            
       - run:
           name: Get backend url
           command: |
-
-            BACKEND_IP=$(aws cloudformation describe-stacks --stack-name udapeople-backend-"${CIRCLE_WORKFLOW_ID:0:7}" --query "Stacks[0].Outputs[0].OutputValue" --output text)
-            API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL=${API_URL}" >> frontend/.env
-
-      - run:
-          name: Deploy frontend objects
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --query "Reservations[].Instances[].PublicIpAddress[]" \
+              --filters "Name=tag:project,Values=udapeople" \
+              --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run: 
+          name: Copy built frontend files to the S3 bucket
           command: |
             cd frontend
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-
+            
       - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail          
