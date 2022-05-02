@@ -257,7 +257,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:13.14.0
     steps:
       - checkout
       - attach_workspace:
@@ -275,10 +275,10 @@ jobs:
           name: Get backend url
           command: |
 
-            BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            BACKEND_IP=$(aws cloudformation describe-stacks --stack-name udapeople-backend-"${CIRCLE_WORKFLOW_ID:0:7}" --query "Stacks[0].Outputs[0].OutputValue" --output text)
             API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL=${API_URL}" >> frontend/.env
-            cat frontend/.env
+
       - run:
           name: Deploy frontend objects
           command: |
