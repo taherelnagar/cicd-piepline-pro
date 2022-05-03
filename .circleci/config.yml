@@ -168,9 +168,7 @@ jobs:
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> .circleci/ansible/inventory.txt
-   
-            cat .circleci/ansible/inventory.txt
-           
+            
       - persist_to_workspace:
           root: ~/
           paths:
@@ -257,38 +255,39 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: python:3.7-alpine3.11
-    steps: 
+      - image: circleci/node:13.8.0
+    steps:
       - checkout
-      - run: 
-          name: install dependencies 
+      - attach_workspace:
+          at: ~/
+
+      - run:
+          name: Install aws dependencies
           command: |
-            
-            apk add --no-cache curl
-            apk add --no-cache --upgrade bash
-            apk add --no-cache --update npm
-            pip3 install awscli
-            
+            sudo apt update && sudo apt install -yy less
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --output text)
+
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
-      - run: 
-          name: Copy built frontend files to the S3 bucket
+
+      - run:
+          name: Deploy frontend objects
           command: |
             cd frontend
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-            
+
       - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail          
@@ -324,7 +323,7 @@ jobs:
             tar -C backend -czvf artifact.tar.gz .
             # export ANSIBLE_HOST_KEY_CHECKING=False 
             # cd .circleci/ansible
-            # echo "Contents  of the inventory.txt file is ------"
+            # echo "Contents  of the inventory.txt file is ----"
             # cat inventory.txt
             # ansible-playbook -i inventory.txt deploy-backend.yml
             
@@ -463,15 +462,10 @@ jobs:
                 aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
                 aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             else
-                echo '-------------Can not Cleanup--------------------'
+                echo '------------Can not Cleanup------------------'
             fi
-      # - destroy-environment:
-      #     workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-      #     event: on_fail          
+    
 
-      # - revert-migrations:
-      #     workflowID: ${CIRCLE_WORKFLOW_ID:0:7}  
-        
 workflows:
   default:
     jobs:
