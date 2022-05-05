@@ -25,7 +25,7 @@ Resources:
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
         Enabled: True
-        DefaultRootObject: index.html
+        DefaultRootObject: 
         DefaultCacheBehavior:
           ForwardedValues:
             QueryString: False
