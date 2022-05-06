@@ -329,7 +329,7 @@ jobs:
             tar -C backend -czvf artifact.tar.gz .
             # export ANSIBLE_HOST_KEY_CHECKING=False 
             # cd .circleci/ansible
-            # echo "Contents  of the inventory.txt file is -----"
+            # echo "Contents  of the inventory.txt file is -------"
             # cat inventory.txt
             # ansible-playbook -i inventory.txt deploy-backend.yml
             
@@ -436,12 +436,12 @@ jobs:
             echo Current Workfolw Id:"${CIRCLE_WORKFLOW_ID:0:7}" 
 
            
-      # - destroy-environment:
-      #     workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-      #     event: on_fail 
+      - destroy-environment:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail 
 
-      # - revert-migrations:
-      #     workflowID: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}   
 
   cleanup:
     docker:
